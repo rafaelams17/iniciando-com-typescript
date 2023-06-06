@@ -6,7 +6,7 @@ import path from "path"; // biblioteca do node para tratar caminho do sistema de
 const connection = knex({ // instancia do knex que de fato fazer conexão com o banco de dados 
     client: "sqlite3", // indica qual SGBD será usado
     connection: { // pode variar de acordo com o banco de dados
-        filename: path.resolve(__dirname, "database.sqlite") // local que vai esta o arquivo 
+        filename: path.resolve(__dirname, 'database.sqlite') // local que vai esta o arquivo 
     }, 
     useNullAsDefault: true,
 }); 
