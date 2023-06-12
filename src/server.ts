@@ -4,6 +4,7 @@ import routes from "./routes"; // importar as rotas
 
 const app = express(); // instancia do Express
 
+app.use(express.json()); // deixar explicito para o Express que ele vai interpretar JSON 
 app.use(routes); // chama o arquivo
 app.use('/uploads', express.static(path.resolve(__dirname, '.', 'uploads'))); // rota estática
 
