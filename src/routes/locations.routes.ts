@@ -3,8 +3,10 @@ import knex from "../database/connection";
 
 const locationsRouter = Router();
 
-locationsRouter.post('/', async (request, response) => { 
-    const { name, email, whatsapp, latitude, longitude, city, uf, items } = request.body;
+locationsRouter.post('/', async (request, response) => {     
+    const { 
+        name, email, whatsapp, latitude, longitude, city, uf, items 
+    } = request.body;
 
     const location = { 
         image: "fake-image.jpg", 
@@ -14,24 +16,36 @@ locationsRouter.post('/', async (request, response) => {
         latitude, 
         longitude, 
         city, 
-        uf 
+        uf   
     };
 
-    const newIds = await knex('locations').insert(location); // inserir a informação do banco de dados
+    // criar uma transação no BD - operação única
+    const transaction = await knex.transaction();
+    
+    const newIds = await transaction('locations').insert(location); // inserir a informação do banco de dados
 
-    const locationId = newIds[0];
+    const location_id = newIds[0];
 
-    const locationItens = items.map((item_id: number)=> {
+    // Esta funcionando está dando alguns erros, vou continuar o curso!
+    const locationItems = items.map((item_id: number) => {
+        const selectedItem = transaction('items').where('id', item_id).first(); // verificar se tem o id - consulta na tabela de item
+              
+        if (!selectedItem) { // se não houver conteúdo
+            return response.status(400).json({ message: 'Item not found.' });
+        }        
         return {
             item_id,
-            location_id: locationId,
-        }
+            location_id // short sintaxe
+        }  
     });
-    // tablelas que relaciona os itens com os locais
-    await knex('locations_items').insert(locationItens);
+
+    // tablela pivô que relaciona os itens com os locais
+    await transaction('locations_items').insert(locationItems);
+
+    await transaction.commit(); // fim da transação - confirma que a transação está OK
 
     return response.json({
-        id: locationId, 
+        id: location_id, 
         ... location, // esse operador quer dizer que é para trazer toda informação que esta no objeto
     });
 });

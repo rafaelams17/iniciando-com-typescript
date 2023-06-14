@@ -8,8 +8,8 @@ import locationsRouter from "./locations.routes";
 const routes = Router();
 
 // a rota está sendo usada aqui, por isso deve ser use()
-routes.use("/items", itemsRouter); 
-routes.use("/locations", locationsRouter);
+routes.use('/items', itemsRouter); 
+routes.use('/locations', locationsRouter);
 
 
 export default routes; // necessario para que os outros arquivos veja as rotas

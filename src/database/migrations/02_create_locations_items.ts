@@ -4,8 +4,8 @@ export async function up(knex: Knex) {
     // criar a tabela 
     return knex.schema.createTable("locations_items", (table) => {
         table.increments('id').primary; // chave primária
-        table.string('location_id').notNullable().references('id').inTable('locations'); // chave estrangeira 
-        table.string('item_id').notNullable().references('id').inTable('items'); // chave estrangeira 
+        table.integer('location_id').notNullable().references('id').inTable('locations'); // chave estrangeira 
+        table.integer('item_id').notNullable().references('id').inTable('items'); // chave estrangeira 
     });
 }
 
