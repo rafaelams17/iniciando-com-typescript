@@ -1,7 +1,30 @@
-import { Router } from "express";
+import { Router, request, response } from "express";
 import knex from "../database/connection"; 
 
 const locationsRouter = Router();
+
+// exibir uma location 
+locationsRouter.get('/:id', async(request, response) => {
+    // pegar o parametro da rota id
+    const { id } = request.params;
+
+    // acessar o BD e buscar as informações referente a esse id
+    const location = await knex('locations').where('id', id).first(); // testar com e sem o first
+
+    if(!location) {
+        return response.status(400).json({message: 'Location not found'});
+    }
+
+    // retornar os itens da location fazendo uma junção das tabelas items e location_items
+    const items = await knex('items')
+    .join('location_items', 'items.id', '=', 'location_items.item_id')
+    .where('location_items.location_id', id)
+    .select('items.title');
+
+    console.log(items)
+
+    return response.json({location, items});  
+});
 
 locationsRouter.post('/', async (request, response) => {     
     const { 
@@ -9,14 +32,7 @@ locationsRouter.post('/', async (request, response) => {
     } = request.body;
 
     const location = { 
-        image: "fake-image.jpg", 
-        name, 
-        email, 
-        whatsapp, 
-        latitude, 
-        longitude, 
-        city, 
-        uf   
+        image: "fake-image.jpg", name, email, whatsapp, latitude, longitude, city, uf   
     };
 
     // criar uma transação no BD - operação única
@@ -40,8 +56,8 @@ locationsRouter.post('/', async (request, response) => {
     });
 
     // tablela pivô que relaciona os itens com os locais
-    await transaction('locations_items').insert(locationItems);
-
+    await transaction('location_items').insert(locationItems);
+    
     await transaction.commit(); // fim da transação - confirma que a transação está OK
 
     return response.json({
