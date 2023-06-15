@@ -26,6 +26,7 @@ locationsRouter.get('/:id', async(request, response) => {
     return response.json({location, items});  
 });
 
+// esta função continua com erros 
 locationsRouter.post('/', async (request, response) => {     
     const { 
         name, email, whatsapp, latitude, longitude, city, uf, items 
@@ -43,27 +44,35 @@ locationsRouter.post('/', async (request, response) => {
     const location_id = newIds[0];
 
     // Esta funcionando está dando alguns erros, vou continuar o curso!
-    const locationItems = items.map((item_id: number) => {
-        const selectedItem = transaction('items').where('id', item_id).first(); // verificar se tem o id - consulta na tabela de item
+    // const locationItems = items.map((item_id: number) => {
+    //     const selectedItem = transaction('items').where('id', item_id).first(); // verificar se tem o id - consulta na tabela de item
               
-        if (!selectedItem) { // se não houver conteúdo
-            return response.status(400).json({ message: 'Item not found.' });
-        }        
-        return {
-            item_id,
-            location_id // short sintaxe
-        }  
-    });
+    //     if (!selectedItem) { // se não houver conteúdo
+    //         return response.status(400).json({ message: 'Item not found.' });
+    //     }        
+    //     return {
+    //         item_id,
+    //         location_id // short sintaxe
+    //     }  
+    // });
 
-    // tablela pivô que relaciona os itens com os locais
-    await transaction('location_items').insert(locationItems);
+    const locationItems = items.map((item_id: number) => {
+        const teste = await knex('items').where('id', item_id).first().select('id');
+        console.log("Teste", teste);
+    })
     
-    await transaction.commit(); // fim da transação - confirma que a transação está OK
 
-    return response.json({
-        id: location_id, 
-        ... location, // esse operador quer dizer que é para trazer toda informação que esta no objeto
-    });
+    return response.json({message: 'teste'})
+
+    // // tablela pivô que relaciona os itens com os locais
+    // await transaction('location_items').insert(locationItems);
+    
+    // await transaction.commit(); // fim da transação - confirma que a transação está OK
+
+    // return response.json({
+    //     id: location_id, 
+    //     ... location, // esse operador quer dizer que é para trazer toda informação que esta no objeto
+    // });
 });
 
 export default locationsRouter; 
