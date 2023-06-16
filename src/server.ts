@@ -1,9 +1,14 @@
 import express from "express"; // importa o Express
-import path from "path";
+import cors from "cors"; // importa o CORS
+import path from "path"; 
 import routes from "./routes"; // importar as rotas 
 
 const app = express(); // instancia do Express
 
+app.use(cors()); // permita que qualque domínio acesse a API
+// app.use(cors({
+//     origin: ['dominio.com.br', 'aluiziodeveloper.com'], // limita o acesso
+// }))
 app.use(express.json()); // deixar explicito para o Express que ele vai interpretar JSON 
 app.use(routes); // chama o arquivo
 app.use('/uploads', express.static(path.resolve(__dirname, '.', 'uploads'))); // rota estática
