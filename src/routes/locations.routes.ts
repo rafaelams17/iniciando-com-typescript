@@ -6,7 +6,7 @@ import multerConfig from "../config/multer";
 const locationsRouter = Router();
 const upload = multer(multerConfig); // passando as configurações do multer 
 
-// exibir uma location 
+// exibir uma location - eu apgauei depois olhar os commit e colocar aqui novamente
 locationsRouter.get('/', async(request, response) => {
     const { city, uf, items } = request.query;
 
