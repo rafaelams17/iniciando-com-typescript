@@ -1,9 +1,33 @@
 import { Router, request, response } from "express";
 import knex from "../database/connection"; 
+import multer from "multer";
+import multerConfig from "../config/multer";
 
 const locationsRouter = Router();
+const upload = multer(multerConfig); // passando as configurações do multer 
 
 // exibir uma location 
+locationsRouter.get('/', async(request, response) => {
+    const { city, uf, items } = request.query;
+
+    if(city && uf && items) {
+        const parsedItems: Number[] = String(items).split(',').map(item =>  Number(item.trim()));
+        const locations = await knex('locations')
+            .join('location_items', 'locations.id', '=', 'location_items.location_id')
+            .whereIn('location_items.item_id', parsedItems)
+            .where('city', String(city))
+            .where('uf', String(uf))
+            .distinct()
+            .select('locations.*');
+        
+        return response.json(locations);
+    } else {
+        const locations = await knex('locations').select('*');
+        return response.json(locations);  
+    }
+});
+
+// exibir uma location com parametro na rota URL
 locationsRouter.get('/:id', async(request, response) => {
     // pegar o parametro da rota id
     const { id } = request.params;
@@ -70,5 +94,29 @@ locationsRouter.post('/', async (request, response) => {
         console.error("Error:", error);
     }
 });
+
+// rota para alterar algo, e vc precisar o que será alterado
+locationsRouter.put('/:id', upload.single('image'), async (request, response) => {
+    const { id } = request.params;
+    const image = request.file?.filename; // pegar somente o arquivo
+
+    const location = await knex('locations').where('id', id).first();
+
+    // se o id não exite na tabela
+    if(!location) {
+        return response.status(400).json({message: 'Locations not found!'});
+    }
+
+    // se houver algo na location
+
+    // nessa variável pegar todos os elementos que estão na tabela location e insere o item image na tabela
+    const locationUpdated = {...location, image};
+
+    
+    await knex('locations').update(locationUpdated).where('id', id);
+    console.log(locationUpdated);
+
+    return response.json(locationUpdated);
+})
 
 export default locationsRouter; 
