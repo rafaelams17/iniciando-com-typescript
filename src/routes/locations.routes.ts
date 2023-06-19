@@ -2,6 +2,7 @@ import { Router, request, response } from "express";
 import knex from "../database/connection"; 
 import multer from "multer";
 import multerConfig from "../config/multer";
+import { celebrate, Joi } from "celebrate";
 
 const locationsRouter = Router();
 const upload = multer(multerConfig); // passando as configurações do multer 
@@ -51,7 +52,20 @@ locationsRouter.get('/:id', async(request, response) => {
 });
 
 // esta função continua com erros 
-locationsRouter.post('/', async (request, response) => {     
+locationsRouter.post('/', celebrate({
+    body: Joi.object().keys({
+        name: Joi.string().required(),
+        email: Joi.string().required().email(),
+        whatsapp: Joi.string().required(),
+        latitude: Joi.number().required(),
+        longitude: Joi.number().required(),
+        city: Joi.string().required(),
+        uf: Joi.string().required().max(2),
+        items: Joi.string().required(),
+    })
+}, {
+    abortEarly: false,
+}), async (request, response) => {     
     try {
         const { 
             name, email, whatsapp, latitude, longitude, city, uf, items 
