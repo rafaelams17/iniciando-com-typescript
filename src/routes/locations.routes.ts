@@ -64,7 +64,7 @@ locationsRouter.post('/', celebrate({
         items: Joi.string().required(),
     })
 }, {
-    abortEarly: false,
+    abortEarly: false, // faz com que mostre todos os erros 
 }), async (request, response) => {     
     try {
         const { 
