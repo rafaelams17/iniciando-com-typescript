@@ -3,9 +3,12 @@ import knex from "../database/connection";
 import multer from "multer";
 import multerConfig from "../config/multer";
 import { celebrate, Joi } from "celebrate";
+import isAuthenticated from "../middlewares/isAuthenticated";
 
 const locationsRouter = Router();
 const upload = multer(multerConfig); // passando as configurações do multer 
+
+locationsRouter.use(isAuthenticated);
 
 // exibir uma location - eu apgauei depois olhar os commit e colocar aqui novamente
 locationsRouter.get('/', async(request, response) => {

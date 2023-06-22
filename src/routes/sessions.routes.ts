@@ -2,6 +2,7 @@ import { Router, request } from "express";
 import { compare } from "bcryptjs"; // metodo para comparar um senha criptograda e uma não criptografada
 import { sign } from "jsonwebtoken";
 import knex from "../database/connection"; // conexão com o bd
+import authConfig from "../config/auth";
 
 const sessionsRouter = Router();
 
@@ -15,16 +16,16 @@ sessionsRouter.post('/', async(request, response) => {
         return response.status(400).json({message: 'Credentials not found.'});
     }
 
-    const comparePassword = compare(password, user.password); // comparar as senhas
+    const comparePassword = await compare(password, user.password); // comparar as senhas
 
     if(!comparePassword){
         return response.status(400).json({message: 'Credentials not found.'});
     }
 
     // construir o Token JWT
-    const token = sign({},'86a79446f5ab5a8a667407a1d0fb6ea3', {
+    const token = sign({}, authConfig.jwt.secret, {
         subject: String(user.id),
-        expiresIn: '1d',
+        expiresIn: authConfig.jwt.expiresIn,
     });
 
     return response.json({user, token});
