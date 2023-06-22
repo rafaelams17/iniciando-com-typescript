@@ -8,7 +8,7 @@ export default { // configurar o uploads, no caso a configuração da biblioteca
         // destination: path.resolve(__dirname, "..", "..", "uploads"), // cria um pasta e salva os aqruivos nela   
 
         filename(req, file, callback) {
-            const hash = crypto.randomBytes(6).toString('hex');
+            const hash = crypto.randomBytes(8).toString('hex');
             const fileName = `${hash}-${file.originalname}`; // esse hash garante que os arquivos não terão o mesmo nome no servidor
 
             callback(null, fileName); // retornar o nome do arquivo

@@ -4,6 +4,7 @@ import multer from "multer";
 import multerConfig from "../config/multer";
 import { celebrate, Joi } from "celebrate";
 import isAuthenticated from "../middlewares/isAuthenticated";
+import env from "../config/env";
 
 const locationsRouter = Router();
 const upload = multer(multerConfig); // passando as configurações do multer 
